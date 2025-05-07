@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sampathkumar Portfolio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+  <div class="hero">
+    <h1 class="title">Hi, I am sampathkumar.L 👋</h1>
+    <div class="wave"></div>
+  </div>
+
+  <section class="about">
+    <h2>About this site</h2>
+    <p>
+     This portfolio website will showcase knowleadge in coding and webdevelopment , this will show some of my project that I have done to enhance my problem sloving skill and for the betterment of my coding knowledge.
+    </p>
+  </section>
+
+  <section class="projects">
+    <h2>Projects</h2>
+    <div class="project-grid">
+        {% for project in projects %}
+        <div class="project-card">
+            <h3>{{ project.name }}</h3>
+            <p>{{ project.description }}</p>
+            <a href={{project.link}} class="btn">GitHub</a>
+            <div class="slider-container">
+                <div class="slider" id="slider{{ loop.index }}">
+                    {% for image in project.images %}
+                    <img src="{{ url_for('static', filename='images/' + image) }}" alt="Slide {{ loop.index }}">
+                    {% endfor %}
+                </div>
+                <button class="slider-btn prev" onclick="moveSlide_{{ loop.index0 }}(-1)">❮</button>
+                <button class="slider-btn next" onclick="moveSlide_{{ loop.index0 }}(1)">❯</button>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sliders = document.querySelectorAll('.slider');
+
+    sliders.forEach((sliderTrack, index) => {
+      const slides = sliderTrack.querySelectorAll('img');
+      const container = sliderTrack.closest('.slider-container');
+      let currentSlide = 0;
+
+      function showSlide(i) {
+        if (i < 0) currentSlide = slides.length - 1;
+        else if (i >= slides.length) currentSlide = 0;
+        else currentSlide = i;
+
+        const offset = -currentSlide * 100;
+        sliderTrack.style.transform = `translateX(${offset}%)`;
+
+        const currentImg = slides[currentSlide];
+        if (currentImg.complete) {
+          container.style.height = currentImg.offsetHeight + 'px';
+        } else {
+          currentImg.onload = () => {
+            container.style.height = currentImg.offsetHeight + 'px';
+          };
+        }
+      }
+
+      // Attach navigation to global function with closure
+      window[`moveSlide_${index}`] = function (step) {
+        showSlide(currentSlide + step);
+      };
+
+      // Initial height on load
+      slides.forEach(img => {
+        img.onload = () => {
+          if (img === slides[currentSlide]) {
+            container.style.height = img.offsetHeight + 'px';
+          }
+        };
+      });
+
+      showSlide(0);
+    });
+  });
+</script>
+</body>
+</html>
